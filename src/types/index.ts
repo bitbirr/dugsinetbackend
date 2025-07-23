@@ -23,13 +23,16 @@ export interface Student {
   address: string;
   emergency_contact: string;
   photo_url?: string;
-  status: 'active' | 'inactive' | 'graduated';
+  status: 'active' | 'inactive' | 'graduated' | 'deleted';
   nationality?: string;
   blood_group?: string;
   medical_conditions?: string;
   enrollment_status: 'pending' | 'enrolled' | 'rejected';
   created_at: string;
   updated_at: string;
+  // Optional fields that might not be present in all queries
+  email?: string;
+  phone?: string;
 }
 
 export interface Staff {

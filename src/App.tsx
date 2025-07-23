@@ -5,6 +5,10 @@ import LoginForm from './components/Auth/LoginForm';
 import MainLayout from './components/Layout/MainLayout';
 import Dashboard from './pages/Dashboard';
 import StudentList from './pages/Students/StudentList';
+// TODO: Import StudentDetail component once it's created
+const StudentDetail: React.FC = () => <div className="p-8">Student Detail - Coming Soon</div>;
+// TODO: Import StudentEdit component once it's created
+const StudentEdit: React.FC = () => <div className="p-8">Student Edit - Coming Soon</div>;
 import StudentOnboarding from './pages/Students/StudentOnboarding';
 import StudentApplications from './pages/Students/StudentApplications';
 import StaffList from './pages/Staff/StaffList';
@@ -12,6 +16,8 @@ import AttendanceView from './pages/Attendance/AttendanceView';
 import CurriculumList from './pages/Curriculum/CurriculumList';
 import CourseForm from './pages/Curriculum/CourseForm';
 import CourseDetail from './pages/Curriculum/CourseDetail';
+import TermsOfService from './pages/Legal/TermsOfService';
+import PrivacyPolicy from './pages/Legal/PrivacyPolicy';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -41,6 +47,8 @@ const AppRoutes: React.FC = () => {
       <Route path="/" element={<MainLayout />}>
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="students" element={<StudentList />} />
+        <Route path="students/:id" element={<StudentDetail />} />
+        <Route path="students/:id/edit" element={<StudentEdit />} />
         <Route path="students/onboarding" element={<StudentOnboarding />} />
         <Route path="students/applications" element={<StudentApplications />} />
         <Route path="staff" element={<StaffList />} />
@@ -73,6 +81,9 @@ const AppRoutes: React.FC = () => {
         <Route path="payroll" element={<div className="p-8">Payroll - Coming Soon</div>} />
         <Route path="activities" element={<div className="p-8">Activities - Coming Soon</div>} />
         <Route path="settings" element={<div className="p-8">Settings - Coming Soon</div>} />
+        {/* Legal Pages */}
+        <Route path="terms-of-service" element={<TermsOfService />} />
+        <Route path="privacy-policy" element={<PrivacyPolicy />} />
       </Route>
     </Routes>
   );
