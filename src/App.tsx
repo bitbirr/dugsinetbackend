@@ -5,10 +5,8 @@ import LoginForm from './components/Auth/LoginForm';
 import MainLayout from './components/Layout/MainLayout';
 import Dashboard from './pages/Dashboard';
 import StudentList from './pages/Students/StudentList';
-// TODO: Import StudentDetail component once it's created
-const StudentDetail: React.FC = () => <div className="p-8">Student Detail - Coming Soon</div>;
-// TODO: Import StudentEdit component once it's created
-const StudentEdit: React.FC = () => <div className="p-8">Student Edit - Coming Soon</div>;
+import StudentDetail from './pages/Students/StudentDetail';
+import StudentEdit from './pages/Students/StudentEdit';
 import StudentOnboarding from './pages/Students/StudentOnboarding';
 import StudentApplications from './pages/Students/StudentApplications';
 import StaffList from './pages/Staff/StaffList';

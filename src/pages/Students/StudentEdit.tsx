@@ -82,9 +82,30 @@ const StudentEdit: React.FC = () => {
       setSaving(true);
       setError(null);
 
-      // Update student in database
-      const { error } = await db.updateStudent(student.id, formData);
-      if (error) throw error;
+      // Separate student table fields from user table fields
+      const studentUpdates = {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        gender: formData.gender,
+        date_of_birth: formData.date_of_birth,
+        address: formData.address,
+        status: formData.status
+      };
+
+      const userUpdates = {
+        email: formData.email,
+        phone: formData.phone
+      };
+
+      // Update student record
+      const { error: studentError } = await db.updateStudent(student.id, studentUpdates);
+      if (studentError) throw studentError;
+
+      // Update user record if student has a user_id and there are user fields to update
+      if (student.user_id && (formData.email || formData.phone)) {
+        const { error: userError } = await db.updateUser(student.user_id, userUpdates);
+        if (userError) throw userError;
+      }
 
       // Navigate back to student detail page
       navigate(`/students/${student.id}`);
