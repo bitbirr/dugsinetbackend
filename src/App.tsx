@@ -11,28 +11,17 @@ import StudentOnboarding from './pages/Students/StudentOnboarding';
 import StudentApplications from './pages/Students/StudentApplications';
 import StaffList from './pages/Staff/StaffList';
 import AttendanceView from './pages/Attendance/AttendanceView';
-import CurriculumList from './pages/Curriculum/CurriculumList';
-import CourseForm from './pages/Curriculum/CourseForm';
-import CourseDetail from './pages/Curriculum/CourseDetail';
+import AttendanceMarking from './pages/Attendance/AttendanceMarking';
+import ExcuseManagement from './pages/Attendance/ExcuseManagement';
+import AttendanceReports from './pages/Attendance/AttendanceReports';
+import ParentExcuseSubmission from './pages/Attendance/ParentExcuseSubmission';
 import EventsPage from './pages/Events/EventsPage';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
+import CurriculumList from './pages/Curriculum/CurriculumList';
+import CourseDetail from './pages/Curriculum/CourseDetail';
+import CourseForm from './pages/Curriculum/CourseForm';
 import LogViewerPage from './pages/Admin/LogViewerPage';
-import TermsOfService from './pages/Legal/TermsOfService';
-import PrivacyPolicy from './pages/Legal/PrivacyPolicy';
-
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  return user ? <>{children}</> : <Navigate to="/login" />;
-};
+import { TermsOfService, PrivacyPolicy } from './pages/Legal';
 
 const AppRoutes: React.FC = () => {
   const { user } = useAuth();
@@ -43,29 +32,41 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/dashboard" />} />
-      <Route path="/login" element={<Navigate to="/dashboard" />} />
       <Route path="/" element={<MainLayout />}>
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="notifications" element={<NotificationsPage />} />
+        <Route index element={<Dashboard />} />
+        
+        {/* Student Routes */}
         <Route path="students" element={<StudentList />} />
         <Route path="students/:id" element={<StudentDetail />} />
         <Route path="students/:id/edit" element={<StudentEdit />} />
         <Route path="students/onboarding" element={<StudentOnboarding />} />
         <Route path="students/applications" element={<StudentApplications />} />
+        
+        {/* Staff Routes */}
         <Route path="staff" element={<StaffList />} />
+        
+        {/* Enhanced Attendance Routes */}
         <Route path="attendance" element={<AttendanceView />} />
+        <Route path="attendance/mark" element={<AttendanceMarking />} />
+        <Route path="attendance/excuses" element={<ExcuseManagement />} />
+        <Route path="attendance/reports" element={<AttendanceReports />} />
+        <Route path="attendance/submit-excuse" element={<ParentExcuseSubmission />} />
+        
+        {/* Curriculum Routes */}
         <Route path="curriculum" element={<CurriculumList />} />
-        <Route path="curriculum/courses/new" element={<CourseForm />} />
         <Route path="curriculum/courses/:id" element={<CourseDetail />} />
         <Route path="curriculum/courses/:id/edit" element={<CourseForm />} />
+        
+        {/* Other Routes */}
         <Route path="events" element={<EventsPage />} />
+        <Route path="notifications" element={<NotificationsPage />} />
         <Route path="admin/logs" element={<LogViewerPage />} />
+        
+        {/* Placeholder Routes */}
         <Route path="students/profiles" element={<div className="p-8">Student Profiles - Coming Soon</div>} />
         <Route path="students/admissions" element={<div className="p-8">Student Admissions - Coming Soon</div>} />
         <Route path="staff/new" element={<div className="p-8">Add Staff - Coming Soon</div>} />
         <Route path="staff/schedule" element={<div className="p-8">Staff Schedule - Coming Soon</div>} />
-        <Route path="attendance/reports" element={<div className="p-8">Attendance Reports - Coming Soon</div>} />
         <Route path="attendance/records" element={<div className="p-8">Attendance Records - Coming Soon</div>} />
         <Route path="curriculum/subjects" element={<div className="p-8">Subjects - Coming Soon</div>} />
         <Route path="curriculum/lessons" element={<div className="p-8">Lessons - Coming Soon</div>} />
@@ -85,6 +86,7 @@ const AppRoutes: React.FC = () => {
         <Route path="payroll" element={<div className="p-8">Payroll - Coming Soon</div>} />
         <Route path="activities" element={<div className="p-8">Activities - Coming Soon</div>} />
         <Route path="settings" element={<div className="p-8">Settings - Coming Soon</div>} />
+        
         {/* Legal Pages */}
         <Route path="terms-of-service" element={<TermsOfService />} />
         <Route path="privacy-policy" element={<PrivacyPolicy />} />

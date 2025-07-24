@@ -1,0 +1,2641 @@
+openapi: 3.0.3
+info:
+  title: Dugsi School Management System API
+  description: |
+    Comprehensive API documentation for the Dugsi School Management System.
+    This system provides attendance management, curriculum management, student profiles,
+    notifications, and administrative features for educational institutions.
+    
+    ## Authentication
+    All endpoints require authentication via Supabase JWT tokens.
+    Include the token in the Authorization header: `Bearer <token>`
+    
+    ## Base URL
+    - Development: `http://localhost:3000/api`
+    - Production: `https://your-domain.com/api`
+    
+  version: 1.0.0
+  contact:
+    name: Dugsi Development Team
+    email: support@dugsi.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+  - url: https://your-domain.com/api
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # Attendance Schemas
+    AttendanceRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        student_id:
+          type: string
+          format: uuid
+        staff_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/AttendanceStatus'
+        period_id:
+          type: string
+          format: uuid
+        excuse_id:
+          type: string
+          format: uuid
+        check_in_time:
+          type: string
+          format: time
+        check_out_time:
+          type: string
+          format: time
+        late_minutes:
+          type: integer
+          minimum: 0
+        early_departure_minutes:
+          type: integer
+          minimum: 0
+        remarks:
+          type: string
+        created_by:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        student:
+          $ref: '#/components/schemas/StudentBasic'
+        period:
+          $ref: '#/components/schemas/AttendancePeriod'
+        excuse:
+          $ref: '#/components/schemas/AttendanceExcuse'
+
+    AttendanceStatus:
+      type: string
+      enum:
+        - present
+        - absent
+        - late
+        - excused_absent
+        - excused_late
+        - half_day
+        - sick
+        - suspended
+
+    AttendancePeriod:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        start_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+        subject_id:
+          type: string
+          format: uuid
+        class_id:
+          type: string
+          format: uuid
+        day_of_week:
+          type: integer
+          minimum: 0
+          maximum: 6
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    AttendanceExcuse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        attendance_id:
+          type: string
+          format: uuid
+        student_id:
+          type: string
+          format: uuid
+        excuse_type:
+          type: string
+          enum: [medical, family_emergency, religious, other]
+        reason:
+          type: string
+        supporting_documents:
+          type: array
+          items:
+            type: string
+        submitted_by:
+          type: string
+          format: uuid
+        submitted_at:
+          type: string
+          format: date-time
+        reviewed_by:
+          type: string
+          format: uuid
+        reviewed_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        admin_notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    AttendanceSummary:
+      type: object
+      properties:
+        student_id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        gr_number:
+          type: string
+        class_name:
+          type: string
+        month:
+          type: string
+        total_days:
+          type: integer
+        present_days:
+          type: integer
+        absent_days:
+          type: integer
+        late_days:
+          type: integer
+        excused_absent_days:
+          type: integer
+        excused_late_days:
+          type: integer
+        attendance_percentage:
+          type: number
+          format: float
+
+    # Student Schemas
+    StudentBasic:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        gr_number:
+          type: string
+        class_id:
+          type: string
+          format: uuid
+
+    Student:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        parent_id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        gr_number:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [male, female, other]
+        class_id:
+          type: string
+          format: uuid
+        enrollment_status:
+          type: string
+          enum: [pending, enrolled, graduated, transferred, dropped]
+        enrollment_date:
+          type: string
+          format: date
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    # Staff Schemas
+    Staff:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        department:
+          type: string
+        position:
+          type: string
+        hire_date:
+          type: string
+          format: date
+        employment_status:
+          type: string
+          enum: [active, inactive, terminated, on_leave]
+        salary:
+          type: number
+          format: float
+        qualifications:
+          type: array
+          items:
+            type: string
+        subjects_taught:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    # Configuration Schemas
+    DocumentType:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        value:
+          type: string
+        label:
+          type: string
+        description:
+          type: string
+        is_required:
+          type: boolean
+        is_active:
+          type: boolean
+        display_order:
+          type: integer
+
+    BloodGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        value:
+          type: string
+        label:
+          type: string
+        is_active:
+          type: boolean
+        display_order:
+          type: integer
+
+    Nationality:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        value:
+          type: string
+        label:
+          type: string
+        country_code:
+          type: string
+        is_active:
+          type: boolean
+        display_order:
+          type: integer
+
+    GuardianRelationship:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        value:
+          type: string
+        label:
+          type: string
+        guardian_type:
+          type: string
+          enum: [father, mother, guardian, emergency_contact]
+        is_active:
+          type: boolean
+        display_order:
+          type: integer
+
+    SystemSetting:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        key:
+          type: string
+        value:
+          type: string
+        description:
+          type: string
+        data_type:
+          type: string
+          enum: [string, number, boolean, json]
+        is_public:
+          type: boolean
+
+    # Class Schema
+    Class:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        grade_level:
+          type: integer
+        section:
+          type: string
+        class_teacher_id:
+          type: string
+          format: uuid
+        academic_year_id:
+          type: string
+          format: uuid
+        capacity:
+          type: integer
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        class_teacher:
+          type: object
+          properties:
+            first_name:
+              type: string
+            last_name:
+              type: string
+
+    # Curriculum Schemas
+    Subject:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        code:
+          type: string
+        description:
+          type: string
+        grade_level:
+          type: integer
+        department:
+          type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        subject_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        code:
+          type: string
+        description:
+          type: string
+        academic_year_id:
+          type: string
+          format: uuid
+        grade_level:
+          type: integer
+        credits:
+          type: integer
+        duration_weeks:
+          type: integer
+        is_mandatory:
+          type: boolean
+        prerequisites:
+          type: array
+          items:
+            type: string
+        learning_objectives:
+          type: array
+          items:
+            type: string
+        syllabus_url:
+          type: string
+          format: uri
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        subject:
+          $ref: '#/components/schemas/Subject'
+        teachers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseTeacher'
+
+    CourseTeacher:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        course_id:
+          type: string
+          format: uuid
+        staff_id:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [primary, assistant, substitute]
+        assigned_at:
+          type: string
+          format: date-time
+        staff:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            first_name:
+              type: string
+            last_name:
+              type: string
+            employee_id:
+              type: string
+
+    # Notification Schemas
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [admission, leave, payment, exam, attendance, announcement, system, academic, disciplinary]
+        priority:
+          type: string
+          enum: [low, normal, high, urgent]
+        icon:
+          type: string
+        color:
+          type: string
+        data:
+          type: object
+        created_by:
+          type: string
+          format: uuid
+        target_roles:
+          type: array
+          items:
+            type: string
+        target_users:
+          type: array
+          items:
+            type: string
+            format: uuid
+        is_global:
+          type: boolean
+        is_read:
+          type: boolean
+        expires_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum: [meeting, exam, event, academic, sports, cultural, holiday, maintenance]
+        status:
+          type: string
+          enum: [draft, published, cancelled, completed]
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        location:
+          type: string
+        max_attendees:
+          type: integer
+        registration_required:
+          type: boolean
+        registration_deadline:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          format: uuid
+        target_roles:
+          type: array
+          items:
+            type: string
+        target_classes:
+          type: array
+          items:
+            type: string
+            format: uuid
+        is_public:
+          type: boolean
+        metadata:
+          type: object
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    # Error Schema
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+    # Success Response
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+
+paths:
+  # Authentication Endpoints
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user with email and password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                  session:
+                    type: object
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      description: Sign out the current user
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  # Attendance Endpoints
+  /attendance:
+    get:
+      tags:
+        - Attendance
+      summary: Get attendance records
+      description: Retrieve attendance records for a specific date and optionally filter by class
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Date to get attendance for (YYYY-MM-DD)
+        - name: classId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Optional class ID to filter by
+      responses:
+        '200':
+          description: Attendance records retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttendanceRecord'
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - Attendance
+      summary: Mark attendance
+      description: Create or update attendance records
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  student_id:
+                    type: string
+                    format: uuid
+                  date:
+                    type: string
+                    format: date
+                  period_id:
+                    type: string
+                    format: uuid
+                  status:
+                    $ref: '#/components/schemas/AttendanceStatus'
+                  check_in_time:
+                    type: string
+                    format: time
+                  late_minutes:
+                    type: integer
+                  remarks:
+                    type: string
+      responses:
+        '201':
+          description: Attendance marked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /attendance/{id}:
+    put:
+      tags:
+        - Attendance
+      summary: Update attendance status
+      description: Update the status and remarks for a specific attendance record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  $ref: '#/components/schemas/AttendanceStatus'
+                remarks:
+                  type: string
+      responses:
+        '200':
+          description: Attendance updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: Attendance record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /attendance/periods:
+    get:
+      tags:
+        - Attendance
+      summary: Get attendance periods
+      description: Retrieve attendance periods, optionally filtered by class and day
+      parameters:
+        - name: classId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: dayOfWeek
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 6
+      responses:
+        '200':
+          description: Attendance periods retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttendancePeriod'
+
+    post:
+      tags:
+        - Attendance
+      summary: Create attendance period
+      description: Create a new attendance period
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - start_time
+                - end_time
+                - class_id
+                - day_of_week
+              properties:
+                name:
+                  type: string
+                start_time:
+                  type: string
+                  format: time
+                end_time:
+                  type: string
+                  format: time
+                subject_id:
+                  type: string
+                  format: uuid
+                class_id:
+                  type: string
+                  format: uuid
+                day_of_week:
+                  type: integer
+                  minimum: 0
+                  maximum: 6
+      responses:
+        '201':
+          description: Attendance period created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendancePeriod'
+
+  /attendance/excuses:
+    get:
+      tags:
+        - Attendance
+      summary: Get attendance excuses
+      description: Retrieve attendance excuses, optionally filtered by student and status
+      parameters:
+        - name: studentId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+      responses:
+        '200':
+          description: Attendance excuses retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttendanceExcuse'
+
+    post:
+      tags:
+        - Attendance
+      summary: Submit attendance excuse
+      description: Submit a new attendance excuse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - student_id
+                - excuse_type
+                - reason
+              properties:
+                attendance_id:
+                  type: string
+                  format: uuid
+                student_id:
+                  type: string
+                  format: uuid
+                excuse_type:
+                  type: string
+                  enum: [medical, family_emergency, religious, other]
+                reason:
+                  type: string
+                supporting_documents:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Excuse submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceExcuse'
+
+  /attendance/excuses/{id}/review:
+    put:
+      tags:
+        - Attendance
+      summary: Review attendance excuse
+      description: Approve or reject an attendance excuse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [approved, rejected]
+                admin_notes:
+                  type: string
+      responses:
+        '200':
+          description: Excuse reviewed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /attendance/summary:
+    get:
+      tags:
+        - Attendance
+      summary: Get attendance summary
+      description: Get attendance summary for reporting
+      parameters:
+        - name: studentId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: month
+          in: query
+          schema:
+            type: string
+          description: Month in YYYY-MM format
+      responses:
+        '200':
+          description: Attendance summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttendanceSummary'
+
+  /attendance/students/{studentId}/history:
+    get:
+      tags:
+        - Attendance
+      summary: Get student attendance history
+      description: Get detailed attendance history for a student
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Student attendance history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttendanceRecord'
+
+  # Configuration Endpoints
+  /config/document-types:
+    get:
+      tags:
+        - Configuration
+      summary: Get document types
+      description: Retrieve all active document types
+      responses:
+        '200':
+          description: Document types retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentType'
+
+    post:
+      tags:
+        - Configuration
+      summary: Create document type
+      description: Create a new document type (Admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - value
+                - label
+              properties:
+                value:
+                  type: string
+                label:
+                  type: string
+                description:
+                  type: string
+                is_required:
+                  type: boolean
+                  default: false
+                display_order:
+                  type: integer
+      responses:
+        '201':
+          description: Document type created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentType'
+
+  /config/document-types/{id}:
+    put:
+      tags:
+        - Configuration
+      summary: Update document type
+      description: Update a document type (Admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                description:
+                  type: string
+                is_required:
+                  type: boolean
+                is_active:
+                  type: boolean
+                display_order:
+                  type: integer
+      responses:
+        '200':
+          description: Document type updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentType'
+
+    delete:
+      tags:
+        - Configuration
+      summary: Delete document type
+      description: Delete a document type (Admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Document type deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /config/blood-groups:
+    get:
+      tags:
+        - Configuration
+      summary: Get blood groups
+      description: Retrieve all active blood groups
+      responses:
+        '200':
+          description: Blood groups retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BloodGroup'
+
+    post:
+      tags:
+        - Configuration
+      summary: Create blood group
+      description: Create a new blood group (Admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - value
+                - label
+              properties:
+                value:
+                  type: string
+                label:
+                  type: string
+                display_order:
+                  type: integer
+      responses:
+        '201':
+          description: Blood group created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BloodGroup'
+
+  /config/blood-groups/{id}:
+    put:
+      tags:
+        - Configuration
+      summary: Update blood group
+      description: Update a blood group (Admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                is_active:
+                  type: boolean
+                display_order:
+                  type: integer
+      responses:
+        '200':
+          description: Blood group updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BloodGroup'
+
+    delete:
+      tags:
+        - Configuration
+      summary: Delete blood group
+      description: Delete a blood group (Admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Blood group deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /config/nationalities:
+    get:
+      tags:
+        - Configuration
+      summary: Get nationalities
+      description: Retrieve all active nationalities
+      responses:
+        '200':
+          description: Nationalities retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Nationality'
+
+    post:
+      tags:
+        - Configuration
+      summary: Create nationality
+      description: Create a new nationality (Admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - value
+                - label
+              properties:
+                value:
+                  type: string
+                label:
+                  type: string
+                country_code:
+                  type: string
+                display_order:
+                  type: integer
+      responses:
+        '201':
+          description: Nationality created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nationality'
+
+  /config/nationalities/{id}:
+    put:
+      tags:
+        - Configuration
+      summary: Update nationality
+      description: Update a nationality (Admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                country_code:
+                  type: string
+                is_active:
+                  type: boolean
+                display_order:
+                  type: integer
+      responses:
+        '200':
+          description: Nationality updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nationality'
+
+    delete:
+      tags:
+        - Configuration
+      summary: Delete nationality
+      description: Delete a nationality (Admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Nationality deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /config/guardian-relationships:
+    get:
+      tags:
+        - Configuration
+      summary: Get guardian relationships
+      description: Retrieve all active guardian relationships
+      responses:
+        '200':
+          description: Guardian relationships retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GuardianRelationship'
+
+    post:
+      tags:
+        - Configuration
+      summary: Create guardian relationship
+      description: Create a new guardian relationship (Admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - value
+                - label
+                - guardian_type
+              properties:
+                value:
+                  type: string
+                label:
+                  type: string
+                guardian_type:
+                  type: string
+                  enum: [father, mother, guardian, emergency_contact]
+                display_order:
+                  type: integer
+      responses:
+        '201':
+          description: Guardian relationship created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianRelationship'
+
+  /config/guardian-relationships/{id}:
+    put:
+      tags:
+        - Configuration
+      summary: Update guardian relationship
+      description: Update a guardian relationship (Admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                guardian_type:
+                  type: string
+                  enum: [father, mother, guardian, emergency_contact]
+                is_active:
+                  type: boolean
+                display_order:
+                  type: integer
+      responses:
+        '200':
+          description: Guardian relationship updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianRelationship'
+
+    delete:
+      tags:
+        - Configuration
+      summary: Delete guardian relationship
+      description: Delete a guardian relationship (Admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Guardian relationship deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /config/system-settings/{key}:
+    get:
+      tags:
+        - Configuration
+      summary: Get system setting
+      description: Retrieve a specific system setting value
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: System setting retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  value:
+                    type: string
+
+    put:
+      tags:
+        - Configuration
+      summary: Update system setting
+      description: Update a system setting value (Admin only)
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - value
+              properties:
+                value:
+                  type: string
+      responses:
+        '200':
+          description: System setting updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  # Staff Management Endpoints
+  /staff:
+    get:
+      tags:
+        - Staff
+      summary: Get all staff
+      description: Retrieve all staff members
+      responses:
+        '200':
+          description: Staff retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Staff'
+
+    post:
+      tags:
+        - Staff
+      summary: Create staff member
+      description: Create a new staff member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - first_name
+                - last_name
+                - email
+                - employee_id
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                employee_id:
+                  type: string
+                phone:
+                  type: string
+                department:
+                  type: string
+                position:
+                  type: string
+                hire_date:
+                  type: string
+                  format: date
+                salary:
+                  type: number
+                  format: float
+                qualifications:
+                  type: array
+                  items:
+                    type: string
+                subjects_taught:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Staff member created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+
+  /staff/{id}:
+    get:
+      tags:
+        - Staff
+      summary: Get staff member by ID
+      description: Retrieve a specific staff member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Staff member retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+
+    put:
+      tags:
+        - Staff
+      summary: Update staff member
+      description: Update staff member information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                department:
+                  type: string
+                position:
+                  type: string
+                employment_status:
+                  type: string
+                  enum: [active, inactive, terminated, on_leave]
+                salary:
+                  type: number
+                  format: float
+                qualifications:
+                  type: array
+                  items:
+                    type: string
+                subjects_taught:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Staff member updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+
+  # Class Management Endpoints
+  /classes:
+    get:
+      tags:
+        - Classes
+      summary: Get all classes
+      description: Retrieve all classes with teacher information
+      responses:
+        '200':
+          description: Classes retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Class'
+
+    post:
+      tags:
+        - Classes
+      summary: Create class
+      description: Create a new class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - grade_level
+              properties:
+                name:
+                  type: string
+                grade_level:
+                  type: integer
+                section:
+                  type: string
+                class_teacher_id:
+                  type: string
+                  format: uuid
+                academic_year_id:
+                  type: string
+                  format: uuid
+                capacity:
+                  type: integer
+      responses:
+        '201':
+          description: Class created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Class'
+
+  /classes/{id}:
+    get:
+      tags:
+        - Classes
+      summary: Get class by ID
+      description: Retrieve a specific class
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Class retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Class'
+
+    put:
+      tags:
+        - Classes
+      summary: Update class
+      description: Update class information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                grade_level:
+                  type: integer
+                section:
+                  type: string
+                class_teacher_id:
+                  type: string
+                  format: uuid
+                capacity:
+                  type: integer
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Class updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Class'
+
+  # Curriculum Endpoints
+  /curriculum/subjects:
+    get:
+      tags:
+        - Curriculum
+      summary: Get all subjects
+      description: Retrieve all subjects
+      responses:
+        '200':
+          description: Subjects retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subject'
+
+    post:
+      tags:
+        - Curriculum
+      summary: Create subject
+      description: Create a new subject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - code
+              properties:
+                name:
+                  type: string
+                code:
+                  type: string
+                description:
+                  type: string
+                grade_level:
+                  type: integer
+                department:
+                  type: string
+      responses:
+        '201':
+          description: Subject created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+
+  /curriculum/subjects/{id}:
+    get:
+      tags:
+        - Curriculum
+      summary: Get subject by ID
+      description: Retrieve a specific subject
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Subject retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+
+    put:
+      tags:
+        - Curriculum
+      summary: Update subject
+      description: Update subject information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                grade_level:
+                  type: integer
+                department:
+                  type: string
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Subject updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+
+    delete:
+      tags:
+        - Curriculum
+      summary: Delete subject
+      description: Delete a subject
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Subject deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /curriculum/courses:
+    get:
+      tags:
+        - Curriculum
+      summary: Get all courses
+      description: Retrieve all courses with related information
+      responses:
+        '200':
+          description: Courses retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+
+    post:
+      tags:
+        - Curriculum
+      summary: Create course
+      description: Create a new course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - subject_id
+                - name
+                - code
+              properties:
+                subject_id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                code:
+                  type: string
+                description:
+                  type: string
+                academic_year_id:
+                  type: string
+                  format: uuid
+                grade_level:
+                  type: integer
+                credits:
+                  type: integer
+                duration_weeks:
+                  type: integer
+                is_mandatory:
+                  type: boolean
+                prerequisites:
+                  type: array
+                  items:
+                    type: string
+                learning_objectives:
+                  type: array
+                  items:
+                    type: string
+                syllabus_url:
+                  type: string
+                  format: uri
+      responses:
+        '201':
+          description: Course created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+
+  /curriculum/courses/{id}:
+    get:
+      tags:
+        - Curriculum
+      summary: Get course by ID
+      description: Get detailed course information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Course retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+
+    put:
+      tags:
+        - Curriculum
+      summary: Update course
+      description: Update course information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                credits:
+                  type: integer
+                duration_weeks:
+                  type: integer
+                is_mandatory:
+                  type: boolean
+                prerequisites:
+                  type: array
+                  items:
+                    type: string
+                learning_objectives:
+                  type: array
+                  items:
+                    type: string
+                syllabus_url:
+                  type: string
+                  format: uri
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Course updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+
+    delete:
+      tags:
+        - Curriculum
+      summary: Delete course
+      description: Delete a course
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Course deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  # Notifications Endpoints
+  /notifications:
+    get:
+      tags:
+        - Notifications
+      summary: Get notifications
+      description: Get recent notifications for current user
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [admission, leave, payment, exam, attendance, announcement, system, academic, disciplinary]
+      responses:
+        '200':
+          description: Notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+
+    post:
+      tags:
+        - Notifications
+      summary: Create notification
+      description: Create a new notification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - type
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                type:
+                  type: string
+                  enum: [admission, leave, payment, exam, attendance, announcement, system, academic, disciplinary]
+                priority:
+                  type: string
+                  enum: [low, normal, high, urgent]
+                  default: normal
+                target_roles:
+                  type: array
+                  items:
+                    type: string
+                target_users:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                is_global:
+                  type: boolean
+                  default: false
+                expires_at:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Notification created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+
+  /notifications/unread-count:
+    get:
+      tags:
+        - Notifications
+      summary: Get unread count
+      description: Get count of unread notifications for current user
+      responses:
+        '200':
+          description: Unread count retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+
+  /notifications/{id}/read:
+    put:
+      tags:
+        - Notifications
+      summary: Mark notification as read
+      description: Mark a specific notification as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Notification marked as read
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  # Events Endpoints
+  /events:
+    get:
+      tags:
+        - Events
+      summary: Get events
+      description: Get upcoming events
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [meeting, exam, event, academic, sports, cultural, holiday, maintenance]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, published, cancelled, completed]
+      responses:
+        '200':
+          description: Events retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+
+    post:
+      tags:
+        - Events
+      summary: Create event
+      description: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - category
+                - start_date
+                - end_date
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                  enum: [meeting, exam, event, academic, sports, cultural, holiday, maintenance]
+                start_date:
+                  type: string
+                  format: date-time
+                end_date:
+                  type: string
+                  format: date-time
+                location:
+                  type: string
+                max_attendees:
+                  type: integer
+                registration_required:
+                  type: boolean
+                  default: false
+                registration_deadline:
+                  type: string
+                  format: date-time
+                target_roles:
+                  type: array
+                  items:
+                    type: string
+                target_classes:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                is_public:
+                  type: boolean
+                  default: true
+      responses:
+        '201':
+          description: Event created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+
+  /events/{id}:
+    get:
+      tags:
+        - Events
+      summary: Get event by ID
+      description: Get detailed event information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Event retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+
+    put:
+      tags:
+        - Events
+      summary: Update event
+      description: Update event information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                  enum: [meeting, exam, event, academic, sports, cultural, holiday, maintenance]
+                start_date:
+                  type: string
+                  format: date-time
+                end_date:
+                  type: string
+                  format: date-time
+                location:
+                  type: string
+                max_attendees:
+                  type: integer
+                registration_required:
+                  type: boolean
+                registration_deadline:
+                  type: string
+                  format: date-time
+                status:
+                  type: string
+                  enum: [draft, published, cancelled, completed]
+      responses:
+        '200':
+          description: Event updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+
+    delete:
+      tags:
+        - Events
+      summary: Delete event
+      description: Delete an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Event deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /events/{id}/status:
+    put:
+      tags:
+        - Events
+      summary: Update event status
+      description: Update the status of an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [draft, published, cancelled, completed]
+      responses:
+        '200':
+          description: Event status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /events/{id}/register:
+    post:
+      tags:
+        - Events
+      summary: Register for event
+      description: Register the current user for an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '201':
+          description: Successfully registered for event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /events/{id}/cancel-registration:
+    delete:
+      tags:
+        - Events
+      summary: Cancel event registration
+      description: Cancel the current user's registration for an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Registration cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  # Students Endpoints
+  /students:
+    get:
+      tags:
+        - Students
+      summary: Get all students
+      description: Retrieve all students with basic information
+      responses:
+        '200':
+          description: Students retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+
+    post:
+      tags:
+        - Students
+      summary: Create student
+      description: Create a new student record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - first_name
+                - last_name
+                - gr_number
+                - date_of_birth
+                - gender
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                gr_number:
+                  type: string
+                date_of_birth:
+                  type: string
+                  format: date
+                gender:
+                  type: string
+                  enum: [male, female, other]
+                class_id:
+                  type: string
+                  format: uuid
+                parent_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Student created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+
+  /students/{id}:
+    get:
+      tags:
+        - Students
+      summary: Get student by ID
+      description: Retrieve a specific student with detailed information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Student retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+
+    put:
+      tags:
+        - Students
+      summary: Update student
+      description: Update student information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                date_of_birth:
+                  type: string
+                  format: date
+                gender:
+                  type: string
+                  enum: [male, female, other]
+                class_id:
+                  type: string
+                  format: uuid
+                enrollment_status:
+                  type: string
+                  enum: [pending, enrolled, graduated, transferred, dropped]
+      responses:
+        '200':
+          description: Student updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Attendance
+    description: Attendance management including records, periods, and excuses
+  - name: Configuration
+    description: System configuration and master data management
+  - name: Staff
+    description: Staff management and profiles
+  - name: Classes
+    description: Class management and organization
+  - name: Curriculum
+    description: Curriculum management including subjects, courses, and lessons
+  - name: Notifications
+    description: Notification system for announcements and alerts
+  - name: Events
+    description: Event management and registration
+  - name: Students
+    description: Student management and profiles
