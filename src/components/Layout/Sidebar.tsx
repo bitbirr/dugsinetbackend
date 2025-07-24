@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import SessionMonitor from '../Auth/SessionMonitor';
-import { Home, Users, UserCheck, Calendar, ClipboardList, BookOpen, GraduationCap, Layers, DollarSign, Building, Bus, Package, CreditCard, FileText, Activity, Settings, LogOut, ChevronDown, ChevronRight, UserPlus, UserSearch, School, Clock, BarChart3, FileCheck, CalendarDays, TestTube, Trophy, Library, Receipt, Wallet, PieChart, Bed, Car, Archive, Car as IdCard, Award, TrendingUp } from 'lucide-react';
+import { Home, Users, UserCheck, Calendar, ClipboardList, BookOpen, GraduationCap, Layers, DollarSign, Building, Bus, Package, CreditCard, FileText, Activity, Settings, LogOut, ChevronDown, ChevronRight, UserPlus, UserSearch, School, Clock, BarChart3, FileCheck, CalendarDays, TestTube, Trophy, Library, Receipt, Wallet, PieChart, Bed, Car, Archive, Car as IdCard, Award, TrendingUp, Shield, Monitor } from 'lucide-react';
 
 interface MenuItem {
   icon: React.ComponentType<any>;
@@ -89,6 +89,12 @@ const Sidebar: React.FC = () => {
         { icon: Library, label: 'Library', path: '/library', roles: ['admin', 'staff', 'student'] },
       ]
     },
+    { 
+      icon: CalendarDays, 
+      label: 'Events & Calendar', 
+      path: '/events', 
+      roles: ['admin', 'staff', 'student', 'parent'] 
+    },
     {
       icon: DollarSign,
       label: 'Finance',
@@ -124,6 +130,14 @@ const Sidebar: React.FC = () => {
       label: 'Activities', 
       path: '/activities', 
       roles: ['admin', 'staff', 'student'] 
+    },
+    {
+      icon: Shield,
+      label: 'Administration',
+      roles: ['admin', 'super_admin'],
+      children: [
+        { icon: Monitor, label: 'System Logs', path: '/admin/logs', roles: ['admin', 'super_admin'] },
+      ]
     },
     { 
       icon: Settings, 

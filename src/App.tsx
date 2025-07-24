@@ -16,6 +16,9 @@ import AttendanceView from './pages/Attendance/AttendanceView';
 import CurriculumList from './pages/Curriculum/CurriculumList';
 import CourseForm from './pages/Curriculum/CourseForm';
 import CourseDetail from './pages/Curriculum/CourseDetail';
+import EventsPage from './pages/Events/EventsPage';
+import NotificationsPage from './pages/Notifications/NotificationsPage';
+import LogViewerPage from './pages/Admin/LogViewerPage';
 import TermsOfService from './pages/Legal/TermsOfService';
 import PrivacyPolicy from './pages/Legal/PrivacyPolicy';
 
@@ -46,6 +49,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/login" element={<Navigate to="/dashboard" />} />
       <Route path="/" element={<MainLayout />}>
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="notifications" element={<NotificationsPage />} />
         <Route path="students" element={<StudentList />} />
         <Route path="students/:id" element={<StudentDetail />} />
         <Route path="students/:id/edit" element={<StudentEdit />} />
@@ -57,6 +61,8 @@ const AppRoutes: React.FC = () => {
         <Route path="curriculum/courses/new" element={<CourseForm />} />
         <Route path="curriculum/courses/:id" element={<CourseDetail />} />
         <Route path="curriculum/courses/:id/edit" element={<CourseForm />} />
+        <Route path="events" element={<EventsPage />} />
+        <Route path="admin/logs" element={<LogViewerPage />} />
         <Route path="students/profiles" element={<div className="p-8">Student Profiles - Coming Soon</div>} />
         <Route path="students/admissions" element={<div className="p-8">Student Admissions - Coming Soon</div>} />
         <Route path="staff/new" element={<div className="p-8">Add Staff - Coming Soon</div>} />
