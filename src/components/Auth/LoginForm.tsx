@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import AdminRegistration from './AdminRegistration';
-import { School, Lock, Mail, AlertCircle } from 'lucide-react';
+import SessionMonitor from './SessionMonitor';
+import { School, Lock, Mail, AlertCircle, Info } from 'lucide-react';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ const LoginForm: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
+  const [showSessionInfo, setShowSessionInfo] = useState(false);
   const { signIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -16,11 +18,16 @@ const LoginForm: React.FC = () => {
     setError('');
     setLoading(true);
 
-    const { error } = await signIn(email, password);
-    if (error) {
-      setError(error.message || 'Login failed');
+    try {
+      const { error } = await signIn(email, password);
+      if (error) {
+        setError(error.message || 'Login failed');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   if (showRegistration) {
@@ -51,6 +58,7 @@ const LoginForm: React.FC = () => {
             </div>
             <h1 className="text-3xl font-bold text-green-600">DugsiNet</h1>
             <p className="text-gray-600 mt-2">School Management System</p>
+            <p className="text-xs text-gray-500 mt-1">Session-based Authentication</p>
           </div>
 
           {error && (
@@ -120,6 +128,24 @@ const LoginForm: React.FC = () => {
               Use your registered email and password to sign in.
             </p>
           </div>
+
+          {/* Session Info Toggle */}
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setShowSessionInfo(!showSessionInfo)}
+              className="inline-flex items-center space-x-1 text-xs text-gray-500 hover:text-gray-700"
+            >
+              <Info className="w-3 h-3" />
+              <span>{showSessionInfo ? 'Hide' : 'Show'} Session Info</span>
+            </button>
+          </div>
+
+          {/* Session Monitor */}
+          {showSessionInfo && (
+            <div className="mt-4">
+              <SessionMonitor showDetails={true} />
+            </div>
+          )}
         </div>
       </div>
     </div>

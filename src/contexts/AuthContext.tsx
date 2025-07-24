@@ -1,85 +1,140 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { auth, db } from '../lib/supabase';
+import { sessionManager, SessionData } from '../lib/sessionManager';
+import { initializeSessionFromStorage } from '../lib/simpleSessionInit';
 import { User } from '../types';
+import { logAuthEvent, logError } from '../lib/logger';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  isAuthenticated: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   hasRole: (role: string | string[]) => boolean;
+  sessionInfo: {
+    isAuthenticated: boolean;
+    user: User | null;
+    expiresAt: Date | null;
+    lastActivity: Date | null;
+    timeUntilExpiry: number | null;
+    timeUntilInactivity: number | null;
+  };
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
+// Hook function - defined as a regular function to avoid Fast Refresh issues
+function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
+}
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// Provider component - defined as a regular function component
+function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getInitialSession = async () => {
-      const { session } = await auth.getSession();
-      if (session?.user) {
-        await loadUserProfile(session.user.id);
+    // Initialize session and set up listener
+    const initializeAuth = async () => {
+      try {
+        logAuthEvent('AuthProvider: Initializing authentication');
+        
+        // Use the simple session initialization function
+        await initializeSessionFromStorage();
+        
+        // Get initial session from session manager
+        const currentUser = sessionManager.getCurrentUser();
+        setUser(currentUser);
+        setLoading(false);
+        
+        if (currentUser) {
+          logAuthEvent('AuthProvider: User authenticated', { email: currentUser.email }, currentUser.id);
+        } else {
+          logAuthEvent('AuthProvider: No authenticated user');
+        }
+      } catch (error) {
+        logError('AUTH', 'AuthProvider: Failed to initialize authentication', error as Error);
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    getInitialSession();
+    // Set up session listener
+    const unsubscribe = sessionManager.addListener((session: SessionData | null) => {
+      logAuthEvent('AuthProvider: Session changed', { 
+        hasSession: !!session,
+        userEmail: session?.user?.email 
+      }, session?.user?.id);
+      
+      setUser(session?.user || null);
+      setLoading(false);
+      
+      if (session?.user) {
+        logAuthEvent('AuthProvider: User session active', { 
+          email: session.user.email,
+          role: session.user.role 
+        }, session.user.id);
+      } else {
+        logAuthEvent('AuthProvider: No active session');
+      }
+    });
+
+    initializeAuth();
+
+    // Cleanup listener on unmount
+    return unsubscribe;
   }, []);
 
-  const loadUserProfile = async (userId: string) => {
-    try {
-      const { data, error } = await db.getUserById(userId);
-      if (error) throw error;
-      setUser(data);
-    } catch (error) {
-      console.error('Error loading user profile:', error);
-      setUser(null);
-    }
-  };
-
   const signIn = async (email: string, password: string) => {
+    logAuthEvent('AuthProvider: Attempting sign in', { email });
+    setLoading(true);
     try {
-      const { data, error } = await auth.signIn(email, password);
-      if (error) return { error };
-      
-      if (data.user) {
-        await loadUserProfile(data.user.id);
+      const result = await sessionManager.signIn(email, password);
+      if (!result.error) {
+        logAuthEvent('AuthProvider: Sign in successful', { email });
+      } else {
+        logAuthEvent('AuthProvider: Sign in failed', { email, error: result.error.message });
       }
-      return { error: null };
+      return result;
     } catch (error) {
+      logError('AUTH', 'AuthProvider: Sign in error', error as Error, { email });
       return { error };
+    } finally {
+      setLoading(false);
     }
   };
 
   const signOut = async () => {
-    await auth.signOut();
-    setUser(null);
+    const userEmail = user?.email;
+    const userId = user?.id;
+    
+    logAuthEvent('AuthProvider: Signing out user', { userEmail }, userId);
+    setLoading(true);
+    try {
+      await sessionManager.signOut();
+      logAuthEvent('AuthProvider: Sign out successful', { userEmail }, userId);
+    } catch (error) {
+      logError('AUTH', 'AuthProvider: Sign out error', error as Error, { userEmail }, userId);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const hasRole = (role: string | string[]) => {
-    if (!user) return false;
-    if (Array.isArray(role)) {
-      return role.includes(user.role);
-    }
-    return user.role === role;
+    return sessionManager.hasRole(role);
   };
 
   const value = {
     user,
     loading,
+    isAuthenticated: sessionManager.isAuthenticated(),
     signIn,
     signOut,
     hasRole,
+    sessionInfo: sessionManager.getSessionInfo(),
   };
 
   return (
@@ -87,4 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </AuthContext.Provider>
   );
-};
+}
+
+// Export both as named exports
+export { useAuth, AuthProvider };

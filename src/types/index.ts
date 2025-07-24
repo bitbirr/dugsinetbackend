@@ -149,3 +149,2145 @@ export interface StudentApplicationWithId extends Omit<Student, 'user_id' | 'cla
   student_guardians: StudentGuardian[];
   student_documents: StudentDocument[];
 }
+
+// New Student Profile Enhancement Types
+
+export interface StudentBehavioralRecord {
+  id: string;
+  student_id: string;
+  incident_type: 'disciplinary' | 'achievement' | 'observation' | 'warning' | 'suspension' | 'commendation';
+  title: string;
+  description: string;
+  severity?: 'low' | 'medium' | 'high' | 'critical';
+  date_occurred: string;
+  location?: string;
+  witnesses?: string[];
+  action_taken?: string;
+  follow_up_required: boolean;
+  follow_up_date?: string;
+  status: 'open' | 'resolved' | 'pending';
+  reported_by: string;
+  reviewed_by?: string;
+  parent_notified: boolean;
+  parent_notification_date?: string;
+  attachments?: any[];
+  created_at: string;
+  updated_at: string;
+  // Populated fields
+  reported_by_name?: string;
+  reviewed_by_name?: string;
+}
+
+export interface StudentHealthRecord {
+  id: string;
+  student_id: string;
+  record_type: 'medical_history' | 'vaccination' | 'allergy' | 'medication' | 'emergency_contact' | 'physical_exam' | 'dental_exam' | 'vision_test' | 'incident';
+  title: string;
+  description?: string;
+  date_recorded: string;
+  doctor_name?: string;
+  clinic_hospital?: string;
+  medications?: string[];
+  allergies?: string[];
+  chronic_conditions?: string[];
+  emergency_procedures?: string;
+  restrictions?: string[];
+  next_checkup_date?: string;
+  vaccination_name?: string;
+  vaccination_date?: string;
+  vaccination_due_date?: string;
+  document_urls?: string[];
+  is_confidential: boolean;
+  recorded_by: string;
+  reviewed_by?: string;
+  created_at: string;
+  updated_at: string;
+  // Populated fields
+  recorded_by_name?: string;
+  reviewed_by_name?: string;
+}
+
+export interface StudentAcademicHistory {
+  id: string;
+  student_id: string;
+  academic_year_id?: string;
+  subject_id?: string;
+  course_id?: string;
+  assessment_type: 'exam' | 'quiz' | 'assignment' | 'project' | 'presentation' | 'practical' | 'midterm' | 'final' | 'continuous_assessment';
+  assessment_name: string;
+  total_marks: number;
+  obtained_marks: number;
+  percentage: number;
+  grade?: string;
+  assessment_date: string;
+  teacher_id?: string;
+  comments?: string;
+  improvement_areas?: string[];
+  strengths?: string[];
+  attendance_percentage?: number;
+  class_rank?: number;
+  class_average?: number;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+  // Populated fields
+  subject_name?: string;
+  course_name?: string;
+  teacher_name?: string;
+  academic_year_name?: string;
+}
+
+export interface StudentNote {
+  id: string;
+  student_id: string;
+  note_type: 'general' | 'academic' | 'behavioral' | 'health' | 'social' | 'family' | 'counseling';
+  title: string;
+  content: string;
+  is_confidential: boolean;
+  is_important: boolean;
+  tags?: string[];
+  visibility: 'staff' | 'teachers' | 'admin_only' | 'parents';
+  created_by: string;
+  updated_by?: string;
+  created_at: string;
+  updated_at: string;
+  // Populated fields
+  created_by_name?: string;
+  updated_by_name?: string;
+}
+
+export interface StudentAchievement {
+  id: string;
+  student_id: string;
+  achievement_type: 'academic' | 'sports' | 'arts' | 'leadership' | 'community_service' | 'behavior' | 'attendance' | 'competition';
+  title: string;
+  description?: string;
+  category?: string;
+  level?: 'school' | 'district' | 'regional' | 'national' | 'international';
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  // Populated fields
+  created_by_name?: string;
+}
+
+// Comprehensive Student Profile Interface
+export interface StudentProfile extends Student {
+  // Related data
+  guardians: StudentGuardian[];
+  documents: StudentDocument[];
+  behavioral_records: StudentBehavioralRecord[];
+  health_records: StudentHealthRecord[];
+  academic_history: StudentAcademicHistory[];
+  notes: StudentNote[];
+  achievements: StudentAchievement[];
+  class_info?: Class;
+  parent_info?: User;
+}
+
+// Form interfaces for creating/editing records
+export interface CreateBehavioralRecordForm {
+  student_id: string;
+  incident_type: StudentBehavioralRecord['incident_type'];
+  title: string;
+  description: string;
+  severity?: StudentBehavioralRecord['severity'];
+  date_occurred: string;
+  location?: string;
+  witnesses?: string[];
+  action_taken?: string;
+  follow_up_required: boolean;
+  follow_up_date?: string;
+  parent_notified: boolean;
+}
+
+export interface CreateHealthRecordForm {
+  student_id: string;
+  record_type: StudentHealthRecord['record_type'];
+  title: string;
+  description?: string;
+  // Remove severity since it doesn't exist in StudentHealthRecord interface
+  date_recorded: string;
+  expiry_date?: string;
+  doctor_name?: string;
+  hospital_clinic?: string;
+  medication_dosage?: string;
+  special_instructions?: string;
+  is_active: boolean;
+  requires_attention: boolean;
+}
+
+export interface CreateAcademicRecordForm {
+  student_id: string;
+  academic_year_id?: string;
+  subject_id?: string;
+  course_id?: string;
+  assessment_type: StudentAcademicHistory['assessment_type'];
+  assessment_name: string;
+  total_marks: number;
+  obtained_marks: number;
+  grade?: string;
+  assessment_date: string;
+  teacher_id?: string;
+  comments?: string;
+  improvement_areas?: string[];
+  strengths?: string[];
+  attendance_percentage?: number;
+  class_rank?: number;
+  class_average?: number;
+}
+
+export interface CreateStudentNoteForm {
+  student_id: string;
+  note_type: StudentNote['note_type'];
+  title: string;
+  content: string;
+  is_confidential: boolean;
+  is_important: boolean;
+  tags?: string[];
+  visibility: StudentNote['visibility'];
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+  category?: string;
+  level?: StudentAchievement['level'];
+  date_achieved: string;
+  awarded_by?: string;
+  certificate_url?: string;
+  points_awarded: number;
+  is_featured: boolean;
+}
+
+export interface CreateAchievementForm {
+  student_id: string;
+  achievement_type: StudentAchievement['achievement_type'];
+  title: string;
+  description?: string;
+}

@@ -168,4 +168,47 @@ export const db = {
   `),
   getTopics: (courseId: string) => supabase.from('curriculum_topics').select('*').eq('course_id', courseId),
   getLessons: (topicId: string) => supabase.from('lessons').select('*').eq('topic_id', topicId),
+
+  // Student Profile Enhancement
+  getStudentProfile: (id: string) => supabase.from('students').select(`
+    *,
+    user:users!students_user_id_fkey(full_name, email),
+    class:classes(name, grade_level, section),
+    parent:users!students_parent_id_fkey(full_name, email),
+    behavioral_records:student_behavioral_records(*),
+    health_records:student_health_records(*),
+    academic_history:student_academic_history(*),
+    notes:student_notes(*),
+    achievements:student_achievements(*)
+  `).eq('id', id).single(),
+
+  // Behavioral Records
+  getBehavioralRecords: (studentId: string) => supabase.from('student_behavioral_records').select('*').eq('student_id', studentId).order('date_occurred', { ascending: false }),
+  createBehavioralRecord: (record: any) => supabase.from('student_behavioral_records').insert(record),
+  updateBehavioralRecord: (id: string, updates: any) => supabase.from('student_behavioral_records').update(updates).eq('id', id),
+  deleteBehavioralRecord: (id: string) => supabase.from('student_behavioral_records').delete().eq('id', id),
+
+  // Health Records
+  getHealthRecords: (studentId: string) => supabase.from('student_health_records').select('*').eq('student_id', studentId).order('date_recorded', { ascending: false }),
+  createHealthRecord: (record: any) => supabase.from('student_health_records').insert(record),
+  updateHealthRecord: (id: string, updates: any) => supabase.from('student_health_records').update(updates).eq('id', id),
+  deleteHealthRecord: (id: string) => supabase.from('student_health_records').delete().eq('id', id),
+
+  // Academic History
+  getAcademicHistory: (studentId: string) => supabase.from('student_academic_history').select('*').eq('student_id', studentId).order('assessment_date', { ascending: false }),
+  createAcademicHistory: (record: any) => supabase.from('student_academic_history').insert(record),
+  updateAcademicHistory: (id: string, updates: any) => supabase.from('student_academic_history').update(updates).eq('id', id),
+  deleteAcademicHistory: (id: string) => supabase.from('student_academic_history').delete().eq('id', id),
+
+  // Student Notes
+  getStudentNotes: (studentId: string) => supabase.from('student_notes').select('*').eq('student_id', studentId).order('created_at', { ascending: false }),
+  createStudentNote: (note: any) => supabase.from('student_notes').insert(note),
+  updateStudentNote: (id: string, updates: any) => supabase.from('student_notes').update(updates).eq('id', id),
+  deleteStudentNote: (id: string) => supabase.from('student_notes').delete().eq('id', id),
+
+  // Student Achievements
+  getStudentAchievements: (studentId: string) => supabase.from('student_achievements').select('*').eq('student_id', studentId).order('date_achieved', { ascending: false }),
+  createStudentAchievement: (achievement: any) => supabase.from('student_achievements').insert(achievement),
+  updateStudentAchievement: (id: string, updates: any) => supabase.from('student_achievements').update(updates).eq('id', id),
+  deleteStudentAchievement: (id: string) => supabase.from('student_achievements').delete().eq('id', id),
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import SessionMonitor from '../Auth/SessionMonitor';
 import { Home, Users, UserCheck, Calendar, ClipboardList, BookOpen, GraduationCap, Layers, DollarSign, Building, Bus, Package, CreditCard, FileText, Activity, Settings, LogOut, ChevronDown, ChevronRight, UserPlus, UserSearch, School, Clock, BarChart3, FileCheck, CalendarDays, TestTube, Trophy, Library, Receipt, Wallet, PieChart, Bed, Car, Archive, Car as IdCard, Award, TrendingUp } from 'lucide-react';
 
 interface MenuItem {
@@ -14,6 +15,7 @@ interface MenuItem {
 const Sidebar: React.FC = () => {
   const { user, signOut, hasRole } = useAuth();
   const navigate = useNavigate();
+  const [showSessionMonitor, setShowSessionMonitor] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
 
   const toggleMenu = (menuLabel: string) => {
@@ -219,12 +221,29 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
         {filteredMenuItems.map(item => renderMenuItem(item))}
       </nav>
 
-      {/* Sign Out */}
-      <div className="p-4 border-t border-gray-200">
+      {/* Session Monitor Toggle */}
+      <div className="px-4 py-2 border-t border-gray-200">
+        <button
+          onClick={() => setShowSessionMonitor(!showSessionMonitor)}
+          className="w-full text-left text-xs text-gray-500 hover:text-gray-700 flex items-center space-x-2"
+        >
+          <span>Session Status</span>
+          <SessionMonitor showDetails={false} />
+        </button>
+        
+        {showSessionMonitor && (
+          <div className="mt-2">
+            <SessionMonitor showDetails={true} className="text-xs" />
+          </div>
+        )}
+      </div>
+
+      {/* User Profile & Logout */}
+      <div className="px-4 py-4 border-t border-gray-200">
         <button
           onClick={signOut}
           className="flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors w-full"
