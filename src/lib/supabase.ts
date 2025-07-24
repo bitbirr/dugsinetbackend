@@ -86,6 +86,7 @@ export const db = {
   createStudentDocument: (document: any) => supabase.from('student_documents').insert(document),
   updateStudentDocument: (id: string, updates: any) => supabase.from('student_documents').update(updates).eq('id', id),
   deleteStudentDocument: (id: string) => supabase.from('student_documents').delete().eq('id', id),
+  getStudentDocuments: (studentId: string) => supabase.from('student_documents').select('*').eq('student_id', studentId).order('created_at', { ascending: false }),
 
   // Configuration Data
   getDocumentTypes: () => supabase.from('document_types').select('*').eq('is_active', true).order('display_order'),
